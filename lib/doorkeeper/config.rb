@@ -9,6 +9,7 @@ module Doorkeeper
     @config = Config::Builder.new(&block).build
     enable_orm
     setup_application_owner if @config.enable_application_owner?
+    setup_application_scopes if @config.enable_application_scopes?
   end
 
   def self.configuration
@@ -40,6 +41,13 @@ and that your `initialize_models!` method doesn't raise any errors.\n
     Application.send :include, Models::Ownership
   end
 
+  def self.setup_application_scopes
+    require File.join(File.dirname(__FILE__), 'models', 'scopes')
+    Application.send :include, Models::Scopes
+    require File.join(File.dirname(__FILE__), 'models', 'scopes_validator')
+    Application.send :validates_with, Models::ScopesValidator
+  end
+
   class Config
     class Builder
       def initialize(&block)
@@ -58,6 +66,10 @@ and that your `initialize_models!` method doesn't raise any errors.\n
 
       def confirm_application_owner
         @config.instance_variable_set('@confirm_application_owner', true)
+      end
+
+      def enable_application_scopes
+        @config.instance_variable_set('@enable_application_scopes', true)
       end
 
       def default_scopes(*scopes)
@@ -189,6 +201,10 @@ and that your `initialize_models!` method doesn't raise any errors.\n
 
     def confirm_application_owner?
       !!@confirm_application_owner
+    end
+
+    def enable_application_scopes?
+      !!@enable_application_scopes
     end
 
     def default_scopes

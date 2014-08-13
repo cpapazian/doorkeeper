@@ -46,6 +46,30 @@ module Doorkeeper
       end
     end
 
+    context 'application scopes are enabled' do
+      before do
+        Doorkeeper.configure do
+          orm DOORKEEPER_ORM
+          enable_application_scopes
+          optional_scopes :foo, :bar
+        end
+      end
+
+      it 'is valid given valid attributes' do
+        expect(new_application).to be_valid
+      end
+
+      it 'is valid given good scopes' do
+        new_application.scopes = 'foo'
+        expect(new_application).to be_valid
+      end
+
+      it 'is invalid given bad scopes' do
+        new_application.scopes = 'baz'
+        expect(new_application).not_to be_valid
+      end
+    end
+
     it 'is invalid without a name' do
       new_application.name = nil
       expect(new_application).not_to be_valid

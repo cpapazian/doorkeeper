@@ -5,7 +5,7 @@ module Doorkeeper::OAuth
     let(:server) {
       server = Doorkeeper.configuration
       server.stub(:default_scopes) { Scopes.new }
-      server.stub(:scopes) { Scopes.from_string('public') }
+      server.stub(:scopes) { Scopes.from_string('public profile') }
       server
     }
 
@@ -85,6 +85,18 @@ module Doorkeeper::OAuth
       subject.scope = nil
       expect(subject.scope).to  eq('default')
       expect(subject.scopes).to eq(Scopes.from_string('default'))
+    end
+
+    context 'when application scopes are enabled' do
+      before do
+        server.stub(:enable_application_scopes?) { true }
+        application.stub(:scopes) { Scopes.from_string('profile') }
+      end
+
+      it 'rejects invalid scopes' do
+        subject.scope = 'public'
+        expect(subject).to_not be_authorizable
+      end
     end
 
     it 'accepts test uri' do
