@@ -9,7 +9,11 @@ module Doorkeeper::OAuth
       server
     }
 
-    let(:client) { double :client, redirect_uri: 'http://tst.com/auth' }
+    let(:application) { double :application }
+
+    let(:client) { double :client, redirect_uri: 'http://tst.com/auth', application: application }
+
+    let(:user) { double :user }
 
     let :attributes do
       {
@@ -20,7 +24,7 @@ module Doorkeeper::OAuth
     end
 
     subject do
-      PreAuthorization.new(server, client, attributes)
+      PreAuthorization.new(server, client, user, attributes)
     end
 
     it 'is authorizable when request is valid' do
@@ -105,6 +109,20 @@ module Doorkeeper::OAuth
     it 'requires an existing client' do
       subject.client = nil
       expect(subject).not_to be_authorizable
+    end
+
+    context 'when client application is private' do
+      it 'rejects application owned by other user' do
+        allow(application).to receive(:owner).and_return(double(:user))
+        allow(application).to receive(:public).and_return(false)
+        expect(subject).not_to be_authorizable
+      end
+
+      it 'accepts application owned by current user' do
+        allow(application).to receive(:owner).and_return(subject.user)
+        allow(application).to receive(:public).and_return(false)
+        expect(subject).to be_authorizable
+      end
     end
 
     it 'requires a redirect uri' do
