@@ -7,13 +7,15 @@ module Doorkeeper
       validate :client, error: :invalid_client
       validate :scopes, error: :invalid_scope
       validate :redirect_uri, error: :invalid_redirect_uri
+      validate :user, error: :invalid_client
 
-      attr_accessor :server, :client, :response_type, :redirect_uri, :state
+      attr_accessor :server, :client, :user, :response_type, :redirect_uri, :state
       attr_writer   :scope
 
-      def initialize(server, client, attrs = {})
+      def initialize(server, client, user, attrs = {})
         @server        = server
         @client        = client
+        @user          = user
         @response_type = attrs[:response_type]
         @redirect_uri  = attrs[:redirect_uri]
         @scope         = attrs[:scope]
@@ -44,6 +46,13 @@ module Doorkeeper
 
       def validate_client
         client.present?
+      end
+
+      def validate_user
+        return true unless client.application.respond_to?(:owner) &&
+                           client.application.respond_to?(:public) &&
+                           !client.application.public
+        @user.presence && @user == client.application.owner
       end
 
       def validate_scopes
