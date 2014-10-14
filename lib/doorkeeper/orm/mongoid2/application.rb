@@ -2,7 +2,7 @@ module Doorkeeper
   class Application
     include Mongoid::Document
     include Mongoid::Timestamps
-    include Models::Mongoid::Scopes
+    include Models::Mongoid2::Scopes
 
     include ApplicationMixin
 
@@ -21,5 +21,6 @@ module Doorkeeper
       ids = AccessToken.where(resource_owner_id: resource_owner.id, revoked_at: nil).map(&:application_id)
       find(ids)
     end
+
   end
 end
