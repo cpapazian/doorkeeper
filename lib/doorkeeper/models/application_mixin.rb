@@ -39,6 +39,5 @@ module Doorkeeper
     def generate_secret
       self.secret ||= UniqueToken.generate
     end
-
   end
 end

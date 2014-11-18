@@ -16,7 +16,6 @@ module Doorkeeper
         Doorkeeper.configure do
           orm DOORKEEPER_ORM
           enable_application_owner
-          # optional_scopes :foo, :bar
         end
       end
 
@@ -45,10 +44,6 @@ module Doorkeeper
           expect(new_application).to be_valid
         end
       end
-    end
-
-    it 'is valid given valid attributes' do
-      expect(new_application).to be_valid
     end
 
     it 'is invalid without a name' do

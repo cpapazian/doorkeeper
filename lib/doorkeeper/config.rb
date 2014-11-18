@@ -191,10 +191,6 @@ and that your `initialize_models!` method doesn't raise any errors.\n
       !!@confirm_application_owner
     end
 
-    def enable_application_scopes?
-      !!@enable_application_scopes
-    end
-
     def default_scopes
       @default_scopes ||= OAuth::Scopes.new
     end
