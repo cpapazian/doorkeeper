@@ -57,10 +57,9 @@ module Doorkeeper
       end
 
       def &(other)
-        other_as_array = other.present? ? other.all : []
-        self.class.from_array(all & other_as_array)
+        other_array = other.present? ? other.all : []
+        self.class.from_array(all & other_array)
       end
-
     end
   end
 end

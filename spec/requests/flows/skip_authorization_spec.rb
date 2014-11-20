@@ -3,7 +3,7 @@ require 'spec_helper_integration'
 feature 'Skip authorization form' do
   background do
     config_is_set(:authenticate_resource_owner) { User.first || redirect_to('/sign_in') }
-    client_exists
+    client_exists(scopes: 'public write')
     default_scopes_exist  :public
     optional_scopes_exist :write
   end
