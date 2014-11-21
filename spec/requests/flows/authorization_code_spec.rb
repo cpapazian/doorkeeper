@@ -3,7 +3,7 @@ require 'spec_helper_integration'
 feature 'Authorization Code Flow' do
   background do
     config_is_set(:authenticate_resource_owner) { User.first || redirect_to('/sign_in') }
-    client_exists(scopes: 'public write')
+    client_exists
     create_resource_owner
     sign_in
   end

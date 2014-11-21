@@ -48,7 +48,12 @@ module Doorkeeper
 
       def validate_scopes
         return true unless scope.present?
-        Helpers::ScopeChecker.valid?(scope, server.scopes & client.application.scopes)
+        valid_scopes = if client.application.scopes.nil?
+          server.scopes
+        else
+          server.scopes & client.application.scopes
+        end
+        Helpers::ScopeChecker.valid?(scope, valid_scopes)
       end
 
       # TODO: test uri should be matched against the client's one
