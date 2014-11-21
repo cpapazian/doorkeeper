@@ -3,7 +3,7 @@ require 'spec_helper_integration'
 feature 'Authorization endpoint' do
   background do
     config_is_set(:authenticate_resource_owner) { User.first || redirect_to('/sign_in') }
-    client_exists(name: 'MyApp', scopes: 'public write')
+    client_exists(name: 'MyApp')
   end
 
   scenario 'requires resource owner to be authenticated' do

@@ -11,7 +11,7 @@ module Doorkeeper::OAuth
 
     let(:application) do
       application = double :application
-      application.stub(:scopes) { Scopes.from_string('public') }
+      application.stub(:scopes) { nil }
       application
     end
 
@@ -79,19 +79,39 @@ module Doorkeeper::OAuth
       end
     end
 
-    it 'accepts valid scopes' do
-      subject.scope = 'public'
-      expect(subject).to be_authorizable
+    context 'client application does not restrict valid scopes' do
+      it 'accepts valid scopes' do
+        subject.scope = 'public'
+        expect(subject).to be_authorizable
+      end
+
+      it 'rejects (globally) non-valid scopes' do
+        subject.scope = 'invalid'
+        expect(subject).not_to be_authorizable
+      end
     end
 
-    it 'rejects (globally) non-valid scopes' do
-      subject.scope = 'invalid'
-      expect(subject).not_to be_authorizable
-    end
+    context 'client application restricts valid scopes' do
+      let(:application) do
+        application = double :application
+        application.stub(:scopes) { Scopes.from_string('public nonsense') }
+        application
+      end
 
-    it 'rejects (application level) non-valid scopes' do
-      subject.scope = 'profile'
-      expect(subject).to_not be_authorizable
+      it 'accepts valid scopes' do
+        subject.scope = 'public'
+        expect(subject).to be_authorizable
+      end
+
+      it 'rejects (globally) non-valid scopes' do
+        subject.scope = 'invalid'
+        expect(subject).not_to be_authorizable
+      end
+
+      it 'rejects (application level) non-valid scopes' do
+        subject.scope = 'profile'
+        expect(subject).to_not be_authorizable
+      end
     end
 
     it 'uses default scopes when none is required' do
